@@ -121,9 +121,9 @@ rtclient.Authorizer = function(options) {
  */
 rtclient.Authorizer.prototype.start = function(onAuthComplete) {
   var _this = this;
-  gapi.load('auth:client,drive-realtime,drive-share', function() {
+  // gapi.load('auth:client,drive-realtime,drive-share', function() {
     _this.authorize(onAuthComplete);
-  });
+  // });
 }
 
 
@@ -159,18 +159,30 @@ rtclient.Authorizer.prototype.authorize = function(onAuthComplete) {
     }, handleAuthResult);
     console.log(clientId);
   };
+  
+  _this.authButton.disabled = false;
+  _this.authButton.onclick = function() {
+	var userId = document.getElementById('userId').value;
+	var accessToken = document.getElementById('accessToken').value;
+	var docId = document.getElementById('documentId').value;
+	rtclient.redirectTo(docId, userId, accessToken);
+  };
+  if(rtclient.params['userId'] && rtclient.params['accessToken']){
+	gdr.authorize(rtclient.params['accessToken'], rtclient.params['userId']);
+	onAuthComplete();
+  }
 
   // Try with no popups first.
-  gapi.auth.authorize({
-    client_id: clientId,
-    scope: [
-      rtclient.INSTALL_SCOPE,
-      rtclient.FILE_SCOPE,
-      rtclient.OPENID_SCOPE
-    ],
-    user_id: userId,
-    immediate: true
-  }, handleAuthResult);
+//  gapi.auth.authorize({
+//    client_id: clientId,
+//    scope: [
+//      rtclient.INSTALL_SCOPE,
+//      rtclient.FILE_SCOPE,
+//      rtclient.OPENID_SCOPE
+//    ],
+//    user_id: userId,
+//    immediate: true
+//  }, handleAuthResult);
 }
 
 
@@ -249,13 +261,16 @@ rtclient.parseState = function(stateParam) {
  * @param fileId {string} the file ID to redirect to.
  * @param userId {string} the user ID to redirect to.
  */
-rtclient.redirectTo = function(fileId, userId) {
+rtclient.redirectTo = function(fileId, userId, accessToken) {
   var params = [];
   if (fileId) {
-    params.push('fileId=' + fileId);
+    params.push('docId=' + fileId);
   }
   if (userId) {
     params.push('userId=' + userId);
+  }
+  if (accessToken) {
+	  params.push('accessToken=' + accessToken);
   }
   // Naive URL construction.
   window.location.href = params.length == 0 ? '/' : ('?' + params.join('&'));
@@ -311,19 +326,19 @@ rtclient.RealtimeLoader.prototype.start = function(afterAuth) {
  * parameters.
  */
 rtclient.RealtimeLoader.prototype.load = function() {
-  var fileId = rtclient.params['fileId'];
+  var fileId = rtclient.params['docId'];
   var userId = this.authorizer.userId;
   var state = rtclient.params['state'];
 
   // Creating the error callback.
   var authorizer = this.authorizer;
   var handleErrors = function(e) {
-    if(e.type == gapi.drive.realtime.ErrorType.TOKEN_REFRESH_REQUIRED) {
+    if(e.type == gdr.ErrorType.TOKEN_REFRESH_REQUIRED) {
       authorizer.authorize();
-    } else if(e.type == gapi.drive.realtime.ErrorType.CLIENT_ERROR) {
+    } else if(e.type == gdr.ErrorType.CLIENT_ERROR) {
       alert("An Error happened: " + e.message);
       window.location.href= "/";
-    } else if(e.type == gapi.drive.realtime.ErrorType.NOT_FOUND) {
+    } else if(e.type == gdr.ErrorType.NOT_FOUND) {
       alert("The file was not found. It does not exist or you do not have read access to the file.");
       window.location.href= "/";
     }
@@ -332,7 +347,7 @@ rtclient.RealtimeLoader.prototype.load = function() {
 
   // We have a file ID in the query parameters, so we will use it to load a file.
   if (fileId) {
-    gapi.drive.realtime.load(fileId, this.onFileLoaded, this.initializeModel, handleErrors);
+    gdr.load(fileId, this.onFileLoaded, this.initializeModel, handleErrors);
     return;
   }
 

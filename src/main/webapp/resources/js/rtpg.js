@@ -90,34 +90,34 @@ rtpg.onFileLoaded = function(doc) {
   for (var i = 0; i < rtpg.allDemos.length; i++) {
     var demo = rtpg.allDemos[i];
     demo.loadField();
-    demo.updateUi();
+    // demo.updateUi();
     demo.connectUi();
     demo.connectRealtime(doc);
   }
   
   // We load the name of the file to populate the file name field.
-  gapi.client.load('drive', 'v2', function() {
-    var request = gapi.client.drive.files.get({
-      'fileId' : rtclient.params['fileId']
-    });
-    $('#documentName').attr('disabled', '');
-    request.execute(function(resp) {
-      $('#documentName').val(resp.title);
-      $('#documentName').removeAttr('disabled');
-      $('#documentName').change(function() {
-        $('#documentName').attr('disabled', '');
-        var body = {'title': $('#documentName').val()};
-        var renameRequest = gapi.client.drive.files.patch({
-          'fileId' : rtclient.params['fileId'],
-          'resource' : body
-        });
-        renameRequest.execute(function(resp) {
-          $('#documentName').val(resp.title);
-          $('#documentName').removeAttr('disabled');
-        });   
-      });
-    });
-  });
+//  gapi.client.load('drive', 'v2', function() {
+//    var request = gapi.client.drive.files.get({
+//      'fileId' : rtclient.params['fileId']
+//    });
+//    $('#documentName').attr('disabled', '');
+//    request.execute(function(resp) {
+//      $('#documentName').val(resp.title);
+//      $('#documentName').removeAttr('disabled');
+//      $('#documentName').change(function() {
+//        $('#documentName').attr('disabled', '');
+//        var body = {'title': $('#documentName').val()};
+//        var renameRequest = gapi.client.drive.files.patch({
+//          'fileId' : rtclient.params['fileId'],
+//          'resource' : body
+//        });
+//        renameRequest.execute(function(resp) {
+//          $('#documentName').val(resp.title);
+//          $('#documentName').removeAttr('disabled');
+//        });   
+//      });
+//    });
+//  });
   
   // Showing message that a doc has been loaded
   $('#documentNameContainer').show();

@@ -131,7 +131,7 @@ rtpg.list.connectUi = function() {
 
 
 rtpg.list.connectRealtime = function() {
-  rtpg.list.field.addEventListener(gapi.drive.realtime.EventType.VALUES_ADDED, rtpg.list.onRealtimeAdded);
-  rtpg.list.field.addEventListener(gapi.drive.realtime.EventType.VALUES_REMOVED, rtpg.list.onRealtimeRemoved);
-  rtpg.list.field.addEventListener(gapi.drive.realtime.EventType.VALUES_SET, rtpg.list.onRealtimeSet);
+  rtpg.list.field.addEventListener(gdr.EventType.VALUES_ADDED, rtpg.list.onRealtimeAdded);
+  rtpg.list.field.addEventListener(gdr.EventType.VALUES_REMOVED, rtpg.list.onRealtimeRemoved);
+  rtpg.list.field.addEventListener(gdr.EventType.VALUES_SET, rtpg.list.onRealtimeSet);
 };

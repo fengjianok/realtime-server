@@ -90,7 +90,7 @@ rtpg.map.onRealtime = function(evt) {
 rtpg.map.onRemoveItem = function(evt) {
   var key = $(rtpg.map.MAP_KEYS_SELECTOR).val();
   if (key != null) {
-    rtpg.map.field.delete(key);
+    rtpg.map.field.remove(key);
   }
 };
 
@@ -114,5 +114,5 @@ rtpg.map.connectUi = function() {
 
 
 rtpg.map.connectRealtime = function() {
-  rtpg.map.field.addEventListener(gapi.drive.realtime.EventType.VALUE_CHANGED, rtpg.map.onRealtime);
+  rtpg.map.field.addEventListener(gdr.EventType.VALUE_CHANGED, rtpg.map.onRealtime);
 };

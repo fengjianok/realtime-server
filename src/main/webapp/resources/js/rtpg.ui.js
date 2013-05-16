@@ -117,8 +117,9 @@ $(document).ready(function() {
 });
 
 // Loading Tooltips
-google.setOnLoadCallback(rtpg.start);
-google.load('picker', '1');
+// google.setOnLoadCallback(rtpg.start);
+// google.load('picker', '1');
+gdrOnLoad =  rtpg.start;
 $(function() {
   $( document ).tooltip({
     position: {

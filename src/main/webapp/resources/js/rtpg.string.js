@@ -79,6 +79,6 @@ rtpg.string.connectUi = function() {
 
 
 rtpg.string.connectRealtime = function() {
-  rtpg.string.field.addEventListener(gapi.drive.realtime.EventType.TEXT_INSERTED, rtpg.string.onRealtimeInsert);
-  rtpg.string.field.addEventListener(gapi.drive.realtime.EventType.TEXT_DELETED, rtpg.string.onRealtimeDelete);
+  rtpg.string.field.addEventListener(gdr.EventType.TEXT_INSERTED, rtpg.string.onRealtimeInsert);
+  rtpg.string.field.addEventListener(gdr.EventType.TEXT_DELETED, rtpg.string.onRealtimeDelete);
 };

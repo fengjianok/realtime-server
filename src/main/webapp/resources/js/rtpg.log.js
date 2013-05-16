@@ -40,22 +40,23 @@ rtpg.log.createLogEntryElement = function(msg) {
 
 rtpg.log.logEvent = function(evt, eventType) {
   var collaborator = rtpg.getCollaborator(evt.sessionId);
+  collaborator = collaborator || {};
   
   var eventDetails;
   // Collab String events
-  if (evt.type == gapi.drive.realtime.EventType.TEXT_INSERTED || evt.type == gapi.drive.realtime.EventType.TEXT_DELETED) {
+  if (evt.type == gdr.EventType.TEXT_INSERTED || evt.type == gdr.EventType.TEXT_DELETED) {
     eventDetails = '"' + evt.text.replace(/ /g, '\xa0') + '" at index ' + evt.index;
   // Collab Map/Custom Objects property changed events
-  } else if (evt.type == gapi.drive.realtime.EventType.VALUE_CHANGED) {
+  } else if (evt.type == gdr.EventType.VALUE_CHANGED) {
     eventDetails = 'Property "' + evt.property + '" changed from "' + evt.oldValue + '" to "' + evt.newValue + '"';
   // Collab List Added and Deleted events
-  } else if (evt.type == gapi.drive.realtime.EventType.VALUES_ADDED || evt.type == gapi.drive.realtime.EventType.VALUES_REMOVED) {
+  } else if (evt.type == gdr.EventType.VALUES_ADDED || evt.type == gdr.EventType.VALUES_REMOVED) {
     eventDetails = '"' + evt.values.join(', ') + '" at index ' + evt.index;
   // Collab List Added events
-  } else if (evt.type == gapi.drive.realtime.EventType.VALUES_SET) {
+  } else if (evt.type == gdr.EventType.VALUES_SET) {
     eventDetails = 'From "' + evt.oldValues.join(', ') + '" to "' + evt.newValues.join(', ') + '" at index ' + evt.index;
   // Collaborators list events
-  } else if (evt.type == gapi.drive.realtime.EventType.COLLABORATOR_JOINED || evt.type == gapi.drive.realtime.EventType.COLLABORATOR_LEFT) {
+  } else if (evt.type == gdr.EventType.COLLABORATOR_JOINED || evt.type == gdr.EventType.COLLABORATOR_LEFT) {
     eventDetails = evt.collaborator.displayName;
     collaborator = evt.collaborator;
   }
