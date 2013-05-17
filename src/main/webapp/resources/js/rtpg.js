@@ -95,6 +95,13 @@ rtpg.onFileLoaded = function(doc) {
     demo.connectRealtime(doc);
   }
   
+  window.doc = rtpg.realtimeDoc;
+  window.mod = doc.getModel();
+  window.root = mod.getRoot();
+  window.str = root.get('demo_string');
+  window.list = root.get('demo_list');
+  window.map = root.get('demo_map');
+  
   // We load the name of the file to populate the file name field.
 //  gapi.client.load('drive', 'v2', function() {
 //    var request = gapi.client.drive.files.get({
