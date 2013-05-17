@@ -91,16 +91,16 @@
             Document ID </label>
           <input type="text" name="documentId" id="documentId" style="margin-left: 5px;" value="@tmp/test">
         </div>
-        You need to
-        <button id="createNewDoc" class="rp-button rp-button-red">Create</button>
-        a new document or
-        <button id="openExistingDoc" class="rp-button rp-button-submit">Open</button>
+        You need to Create 
+        <button id="createNewDoc" class="rp-button rp-button-red" style="display:none;">Create</button>
+        a new document or Open 
+        <button id="openExistingDoc" class="rp-button rp-button-submit" style="display:none;">Open</button>
          an existing document on which to collaborate.
         <div id="documentNameContainer" style="display:none;">
           <label for="documentName" style="line-height: 27px;">
             <span style="font-size: 20px; color: green;">&#10003;</span>
-            You currently have a document opened named </label>
-            <input type="text" name="documentName" id="documentName" title="Change the file's name" style="margin-left: 5px;" value="" disabled="disabled" placeholder="...">
+            You currently have a document opened! </label>
+            <input type="text" name="documentName" id="documentName" title="Change the file's name" style="display:none;margin-left: 5px;" value="" disabled="disabled" placeholder="...">
         </div>
       </div>
     </section>
@@ -112,8 +112,8 @@
         </h3>
       </div>
       <div class="rp-section-content" style="line-height: 30px;">
-        To collaborate you must
-        <button id="demoShareButton" class="rp-button rp-button-share">Share</button> this document
+        To collaborate you must Share 
+        <button id="demoShareButton" class="rp-button rp-button-share" style="display:none;">Share</button> this document
         with other users or <a href="#" onmouseover="this.href = window.location.href" target="_blank">open this
           same document in a new window</a> and collaborate with yourself.
       </div>
