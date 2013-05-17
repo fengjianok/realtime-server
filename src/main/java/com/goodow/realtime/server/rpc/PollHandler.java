@@ -14,59 +14,41 @@
 package com.goodow.realtime.server.rpc;
 
 import com.goodow.realtime.channel.rpc.Constants.Params;
-import com.goodow.realtime.server.model.Delta;
-import com.goodow.realtime.server.model.DeltaSerializer;
 import com.goodow.realtime.server.model.ObjectId;
+import com.goodow.realtime.server.model.SessionId;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.walkaround.slob.server.AccessDeniedException;
 import com.google.walkaround.slob.server.SlobFacilities;
 import com.google.walkaround.slob.server.SlobNotFoundException;
 import com.google.walkaround.slob.server.SlobStore;
-import com.google.walkaround.slob.server.SlobStore.HistoryResult;
+import com.google.walkaround.slob.server.SlobStore.ConnectResult;
 import com.google.walkaround.util.server.servlet.AbstractHandler;
 import com.google.walkaround.util.server.servlet.BadRequestException;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Used by the client to notify the server of connection to an object at a specific revision, or to
- * refresh a channel.
- */
-public class DeltaHandler extends AbstractHandler {
-
-  @SuppressWarnings("unused")
-  private static final Logger log = Logger.getLogger(DeltaHandler.class.getName());
-
-  private static JsonArray serializeDeltas(long startVersion, List<Delta<String>> entries) {
-    JsonArray history = new JsonArray();
-    int index = 0;
-    for (Delta<String> data : entries) {
-      history.add(DeltaSerializer.dataToClientJson(data, startVersion + index + 1));
-      index++;
-    }
-    return history;
-  }
+public class PollHandler extends AbstractHandler {
 
   @Inject
   SlobFacilities slobFacilities;
+  @Inject
+  DeltaHandler deltaHandler;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-    String id = requireParameter(req, Params.ID);
-    JsonObject toRtn = new JsonObject();
+  public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    JsonObject payload = new JsonParser().parse(requireParameter(req, "")).getAsJsonObject();
+    String sessionId = requireParameter(req, Params.SESSION_ID);
+    JsonArray toRtn;
     try {
-      Long startRev = Long.parseLong(requireParameter(req, Params.START_REVISION));
-      String endRevString = optionalParameter(req, Params.END_REVISION, null);
-      Long endRev = endRevString == null ? null : Long.parseLong(endRevString);
-      fetchDeltas(toRtn, new ObjectId(id), startRev - 1, endRev);
+      toRtn = fetchDeltas(payload.get(Params.IDS).getAsJsonArray(), sessionId);
     } catch (SlobNotFoundException e) {
       throw new BadRequestException("Object not found or access denied", e);
     } catch (AccessDeniedException e) {
@@ -79,13 +61,33 @@ public class DeltaHandler extends AbstractHandler {
     Util.writeJsonResult(resp.getWriter(), toRtn.toString());
   }
 
-  void fetchDeltas(JsonObject obj, ObjectId key, long version, Long endVersion) throws IOException,
+  private JsonArray fetchDeltas(JsonArray ids, String sessionId) throws IOException,
       SlobNotFoundException, AccessDeniedException {
+    JsonArray msgs = new JsonArray();
     SlobStore store = slobFacilities.getSlobStore();
-    HistoryResult history = store.loadHistory(key, version, endVersion);
-    obj.add(Params.DELTAS, serializeDeltas(version, history.getData()));
-    if (history.hasMore()) {
-      obj.addProperty(Params.HAS_MORE, history.hasMore());
+    String token = null;
+    for (JsonElement e : ids) {
+      JsonArray array = e.getAsJsonArray();
+      ObjectId key = new ObjectId(array.get(0).getAsString());
+      long startRev = array.get(1).getAsLong();
+      Long endVersion = array.size() >= 3 ? array.get(2).getAsLong() : null;
+
+      ConnectResult r = store.reconnect(key, new SessionId(sessionId));
+      if (r.getChannelToken() != null) {
+        assert token == null || token.equals(r.getChannelToken());
+        token = r.getChannelToken();
+      }
+      JsonObject msg = new JsonObject();
+      msg.addProperty(Params.ID, key.toString());
+      deltaHandler.fetchDeltas(msg, key, startRev, endVersion);
+      msgs.add(msg);
     }
+    if (token != null) {
+      JsonObject tokenMsg = new JsonObject();
+      tokenMsg.addProperty(Params.ID, Params.TOKEN);
+      tokenMsg.addProperty(Params.TOKEN, token);
+      msgs.add(tokenMsg);
+    }
+    return msgs;
   }
 }

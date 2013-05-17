@@ -51,7 +51,7 @@ public class SaveHandler extends AbstractHandler {
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
     String sid = requireParameter(req, Constants.Params.SESSION_ID);
     String key = requireParameter(req, Constants.Params.ID);
-    JsonObject payload = new JsonParser().parse(req.getParameter("")).getAsJsonObject();
+    JsonObject payload = new JsonParser().parse(requireParameter(req, "")).getAsJsonObject();
     long version = payload.get(Params.REVISION).getAsLong();
     String deltas = payload.get(Params.CHANGES).toString();
 

@@ -15,6 +15,7 @@ package com.goodow.realtime.server;
 
 import com.goodow.realtime.channel.rpc.Constants;
 import com.goodow.realtime.server.rpc.DeltaHandler;
+import com.goodow.realtime.server.rpc.PollHandler;
 import com.goodow.realtime.server.rpc.RevisionHandler;
 import com.goodow.realtime.server.rpc.SaveHandler;
 import com.goodow.realtime.server.rpc.SnapshotHandler;
@@ -59,7 +60,8 @@ public class RealtimeServletModule extends ServletModule {
           .put("/" + Constants.Services.SNAPSHOT, SnapshotHandler.class).put(
               "/" + Constants.Services.DELTA, DeltaHandler.class).put(
               "/" + Constants.Services.REVISION, RevisionHandler.class).put(
-              "/" + Constants.Services.SAVE, SaveHandler.class)
+              "/" + Constants.Services.POLL, PollHandler.class).put("/" + Constants.Services.SAVE,
+              SaveHandler.class)
 
           // Backend servers. Could potentially use a separate Guice module.
           .put("/" + AffinityMutationProcessor.PATH, StoreMutateHandler.class)
