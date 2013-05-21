@@ -16,7 +16,7 @@
 -->
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
   <application>goodow-realtime</application>
-  <version>1</version>
+  <version>3</version>
   <threadsafe>true</threadsafe>
 
   <system-properties>
@@ -24,7 +24,7 @@
   </system-properties>
 
   <public-root>/resources</public-root>
-  <!-- Configure serving/caching of GWT files -->
+  <!-- Cache generated GWT files, except nocache files. -->
   <static-files>
     <include path="/**" />
     <include path="/**.nocache.*" expiration="1s" />
