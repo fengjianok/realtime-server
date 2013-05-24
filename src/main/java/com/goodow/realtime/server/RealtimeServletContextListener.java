@@ -23,6 +23,6 @@ public class RealtimeServletContextListener extends GuiceServletContextListener 
   @Override
   protected Injector getInjector() {
     return Guice.createInjector(new RealtimeServerModule(), GuiceSetup.getRootModule(), GuiceSetup
-        .getServletModule(), new AppEngineModule());
+        .getServletModule(), new AppEngineModule(), new RealtimeRestApiModule());
   }
 }

@@ -24,6 +24,7 @@ import com.goodow.realtime.id.IdGenerator;
 import com.goodow.realtime.server.model.ObjectId;
 import com.goodow.realtime.util.Pair;
 
+import com.google.api.client.util.escape.CharEscapers;
 import com.google.appengine.api.backends.BackendService;
 import com.google.appengine.api.memcache.Expiration;
 import com.google.appengine.api.memcache.MemcacheService.SetPolicy;
@@ -34,7 +35,6 @@ import com.google.appengine.api.urlfetch.HTTPRequest;
 import com.google.appengine.api.urlfetch.HTTPResponse;
 import com.google.appengine.api.urlfetch.URLFetchService;
 import com.google.common.base.Charsets;
-import com.google.common.net.UriEscapers;
 import com.google.gson.JsonParseException;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Inject;
@@ -162,7 +162,7 @@ public class AffinityMutationProcessor implements MutationProcessor {
     }
 
     private String urlEncode(String s) {
-      return UriEscapers.uriQueryStringEscaper(false).escape(s);
+      return CharEscapers.escapeUriQuery(s);
     }
   }
 
